@@ -93,10 +93,14 @@ func NewWatcher(addr string, setters ...WatcherOption) (persist.Watcher, error) 
 			case <-w.closed:
 				return
 			default:
-				err := w.subscribe()
-				if err != nil {
-					fmt.Printf("Failure from Redis subscription: %v", err)
+				err := w.connect(addr)
+				if err == nil {
+					err = w.subscribe()
 				}
+				if err != nil {
+					fmt.Printf("Failure from Redis subscription: %v\n", err)
+				}
+				time.Sleep(2 * time.Second)
 			}
 		}
 	}()
